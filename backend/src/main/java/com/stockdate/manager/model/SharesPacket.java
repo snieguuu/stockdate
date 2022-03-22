@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Class representing stock market share.
@@ -29,9 +30,10 @@ public class SharesPacket {
     private int sharesAmount;
 
     @NotEmpty
-    private int sharePrice;
+    private double purchasePrice;
 
     private double purchaseValue;
+
     @NotEmpty
     private double currentPrice;
 
@@ -39,11 +41,10 @@ public class SharesPacket {
 
     private double gainPercent;
 
-    private double gainCurrency;
+    private double gainInCurrency;
 
     private double shareInPortfolioPercentage;
 
     private double shareInCapitalPercentage;
-
 
 }
