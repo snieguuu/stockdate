@@ -9,7 +9,7 @@ import java.util.List;
 @Entity
 public class Portfolio {
 
-    private List<Share> shares;
+    private List<SharesPacket> shares;
 
     private double totalPortfolioValue;
 
