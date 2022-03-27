@@ -1,6 +1,8 @@
 package com.stockdate.manager.model;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.List;
 
 /**
@@ -9,6 +11,10 @@ import java.util.List;
 @Entity
 public class Portfolio {
 
+    @Id
+    @GeneratedValue
+    private Long id;
+
     private List<SharesPacket> shares;
 
     private double totalPortfolioValue;
@@ -16,5 +22,7 @@ public class Portfolio {
     private double totalPortfolioGainPercentage;
 
     private double totalPortfolioGainCurrency;
+
+    private double capitalInCurrency;
 
 }
