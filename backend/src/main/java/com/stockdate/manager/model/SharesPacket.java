@@ -18,9 +18,6 @@ public class SharesPacket {
     private Long id;
 
     @NotEmpty
-    private String username;
-
-    @NotEmpty
     private Date purchaseDate;
 
     @NotEmpty
@@ -46,20 +43,12 @@ public class SharesPacket {
 
     private double gainInCurrency;
 
-    private double shareInPortfolioPercentage;
+    private double sharesPacketInPortfolioPercentage;
 
-    private double shareInCapitalPercentage;
+    private double sharesPacketInCapitalPercentage;
 
     public Long getId() {
         return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public Date getPurchaseDate() {
@@ -142,20 +131,20 @@ public class SharesPacket {
         this.gainInCurrency = gainInCurrency;
     }
 
-    public double getShareInPortfolioPercentage() {
-        return shareInPortfolioPercentage;
+    public double getSharesPacketInPortfolioPercentage() {
+        return sharesPacketInPortfolioPercentage;
     }
 
-    public void setShareInPortfolioPercentage(double shareInPortfolioPercentage) {
-        this.shareInPortfolioPercentage = shareInPortfolioPercentage;
+    public void setSharesPacketInPortfolioPercentage(double sharesPacketInPortfolioPercentage) {
+        this.sharesPacketInPortfolioPercentage = sharesPacketInPortfolioPercentage;
     }
 
-    public double getShareInCapitalPercentage() {
-        return shareInCapitalPercentage;
+    public double getSharesPacketInCapitalPercentage() {
+        return sharesPacketInCapitalPercentage;
     }
 
-    public void setShareInCapitalPercentage(double shareInCapitalPercentage) {
-        this.shareInCapitalPercentage = shareInCapitalPercentage;
+    public void setSharesPacketInCapitalPercentage(double sharesPacketInCapitalPercentage) {
+        this.sharesPacketInCapitalPercentage = sharesPacketInCapitalPercentage;
     }
 
     @Override
@@ -163,11 +152,20 @@ public class SharesPacket {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SharesPacket that = (SharesPacket) o;
-        return sharesAmount == that.sharesAmount && Double.compare(that.purchasePrice, purchasePrice) == 0 && Double.compare(that.purchaseValue, purchaseValue) == 0 && Double.compare(that.currentPrice, currentPrice) == 0 && Double.compare(that.currentValue, currentValue) == 0 && Double.compare(that.gainPercent, gainPercent) == 0 && Double.compare(that.gainInCurrency, gainInCurrency) == 0 && Double.compare(that.shareInPortfolioPercentage, shareInPortfolioPercentage) == 0 && Double.compare(that.shareInCapitalPercentage, shareInCapitalPercentage) == 0 && id.equals(that.id) && username.equals(that.username) && purchaseDate.equals(that.purchaseDate) && name.equals(that.name) && ticker.equals(that.ticker);
+        return sharesAmount == that.sharesAmount && Double.compare(that.purchasePrice, purchasePrice) == 0 &&
+                Double.compare(that.purchaseValue, purchaseValue) == 0 &&
+                Double.compare(that.currentPrice, currentPrice) == 0 &&
+                Double.compare(that.currentValue, currentValue) == 0 &&
+                Double.compare(that.gainPercent, gainPercent) == 0 &&
+                Double.compare(that.gainInCurrency, gainInCurrency) == 0 &&
+                Double.compare(that.sharesPacketInPortfolioPercentage, sharesPacketInPortfolioPercentage) == 0 &&
+                Double.compare(that.sharesPacketInCapitalPercentage, sharesPacketInCapitalPercentage) == 0 && id.equals(that.id) &&
+                purchaseDate.equals(that.purchaseDate) && name.equals(that.name) && ticker.equals(that.ticker);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, purchaseDate, name, ticker, sharesAmount, purchasePrice, purchaseValue, currentPrice, currentValue, gainPercent, gainInCurrency, shareInPortfolioPercentage, shareInCapitalPercentage);
+        return Objects.hash(id, purchaseDate, name, ticker, sharesAmount, purchasePrice, purchaseValue, currentPrice,
+                currentValue, gainPercent, gainInCurrency, sharesPacketInPortfolioPercentage, sharesPacketInCapitalPercentage);
     }
 }
