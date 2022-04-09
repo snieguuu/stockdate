@@ -1,49 +1,26 @@
 package com.stockdate.manager.services;
 
+import com.stockdate.manager.dao.PortfolioRepository;
+import com.stockdate.manager.model.Portfolio;
 import com.stockdate.manager.model.SharesPacket;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.HashMap;
 import java.util.List;
 
 /**
- * Service for calculating fields in {@link SharesPacket} which can be calculated from {@link NotEmpty} fields.
+ * Service for calculating fields in {@link Portfolio} which can be calculated from {@link SharesPacket} {@link NotEmpty} fields.
  */
 @Service
 public class PortfolioService {
 
-    /**
-     * Method calculating shares value. Can be used for calculating purchase value and current value.
-     *
-     * @param sharesAmount shares amount
-     * @param sharePrice   one share price
-     * @return shares value result
-     */
-    public double calculateSharesValue(int sharesAmount, double sharePrice) {
-        return sharesAmount * sharePrice;
-    }
+    @Autowired
+    private PortfolioRepository portfolioRepository;
 
-    /**
-     * Method calculating gain percentage for shares packet.
-     *
-     * @param purchasePrice purchase share price
-     * @param currentPrice  current share price
-     * @return gain percentage for shares packet
-     */
-    public double calculateGainPercentage(double purchasePrice, double currentPrice) {
-        return (currentPrice - purchasePrice) / purchasePrice * 100;
-    }
-
-    /**
-     * Method calculating gain in currency for share packet.
-     *
-     * @param purchasePrice purchase share price
-     * @param currentPrice  current share price
-     * @return gain in currency for share packet
-     */
-    public double calculateGainInCurrency(double purchasePrice, double currentPrice) {
-        return currentPrice - purchasePrice;
-    }
+    @Autowired
+    private SharesPacketService sharesPacketService;
 
     /**
      * Method calculating shares in portfolio and shares in capital percentage.
@@ -79,6 +56,95 @@ public class PortfolioService {
     public double calculateTotalPortfolioGainPercentage(double totalPortfolioValue, List<Double> purchaseValuesList) {
         double purchaseValuesSum = purchaseValuesList.stream().mapToDouble(Double::doubleValue).sum();
         return (totalPortfolioValue - purchaseValuesSum) / purchaseValuesSum * 100;
+    }
+
+    /**
+     * Method adding shares packet to the portfolio.
+     *
+     * @param portfolio    portfolio which shares packet should be added to
+     * @param sharesPacket shares packet being added to the portfolio
+     */
+    public void addSharesPacketToPortfolio(Portfolio portfolio, SharesPacket sharesPacket) {
+        portfolio.addSharesPacket(sharesPacket);
+    }
+
+    /**
+     * Get portfolio for the user or create new portfolio if it doesn't exist.
+     *
+     * @param username name of the user whom portfolio is added for
+     * @return portfolio for the user
+     */
+    public Portfolio getPortfolioCreateIfDoesNotExist(String username) {
+        Portfolio portfolio = portfolioRepository.findByUsername(username);
+        if (portfolio == null) {
+            portfolio = new Portfolio();
+            portfolio.setUsername(username);
+            portfolioRepository.save(portfolio);
+        }
+        return portfolio;
+    }
+
+    /**
+     * Method recalculating values in {@link SharesPacket} and {@link Portfolio} after change.
+     *
+     * @param sharesPacket shares packet
+     * @param portfolio    portfolio
+     * @return {@link HashMap} with {@link String} as a key and {@link Double} as a value
+     */
+    public HashMap<String, Double> recalculatePortfolio(SharesPacket sharesPacket, Portfolio portfolio) {
+        HashMap<String, Double> resultValuesMap = new HashMap<>();
+        int sharesAmount = sharesPacket.getSharesAmount();
+        double purchasePrice = sharesPacket.getPurchasePrice();
+        double currentPrice = sharesPacket.getCurrentPrice();
+
+        double currentSharesPacketValue = sharesPacketService.calculateSharesValue(sharesAmount, currentPrice);
+        double totalPortfolioValue = portfolio.getTotalPortfolioValue();
+        double capitalInCurrency = portfolio.getCapitalInCurrency();
+
+        resultValuesMap.put("purchaseValue", sharesPacketService.calculateSharesValue(sharesAmount, purchasePrice));
+        resultValuesMap.put("currentSharesPacketValue", currentSharesPacketValue);
+        resultValuesMap.put("gainPercentage", sharesPacketService.calculateGainPercentage(purchasePrice, currentPrice));
+        resultValuesMap.put("gainInCurrency", sharesPacketService.calculateGainInCurrency(purchasePrice, currentPrice));
+        resultValuesMap.put("totalPortfolioValue", totalPortfolioValue);
+        resultValuesMap.put("capitalInCurrency", capitalInCurrency);
+        resultValuesMap.put("sharesPacketInPortfolioPercentage",
+                calculateSharesPacketPercentage(currentSharesPacketValue, totalPortfolioValue));
+        resultValuesMap.put("sharesPacketInCapitalPercentage",
+                calculateSharesPacketPercentage(currentSharesPacketValue, capitalInCurrency));
+
+        return resultValuesMap;
+    }
+
+    /**
+     * Method setting portfolio values after recalculation.
+     *
+     * @param portfolio            portfolio
+     * @param sharesPacket         shares packet
+     * @param resultValuesMap      {@link HashMap} with recalculated values
+     * @param sharesPacketToUpdate indicate is {@link SharesPacket} should be updated (true), or added (false)
+     */
+    public void setPortfolioValuesAfterChange(Portfolio portfolio, SharesPacket sharesPacket,
+                                              HashMap<String, Double> resultValuesMap, boolean sharesPacketToUpdate) {
+        if (sharesPacketToUpdate) {
+            portfolio.updateSharesPacket(sharesPacket);
+        } else {
+            portfolio.addSharesPacket(sharesPacket);
+        }
+        portfolio.setTotalPortfolioValue(resultValuesMap.get("totalPortfolioValue"));
+        portfolio.setCapitalInCurrency(resultValuesMap.get("capitalInCurrency"));
+
+    }
+
+    /**
+     * Method getting {@link SharesPacket} with particular ticker for particular user.
+     * @param username name of the portfolio owner
+     * @param ticker ticker of {@link SharesPacket}
+     * @return {@link SharesPacket}
+     */
+    public SharesPacket getSharesPacket(String username, String ticker) {
+        Portfolio portfolio = portfolioRepository.findByUsername(username);
+        return portfolio.getSharesPacketList().stream().filter(sharesPacket -> sharesPacket.getTicker().equals(ticker))
+                .findFirst().orElseGet(SharesPacket::new);
     }
 
 
