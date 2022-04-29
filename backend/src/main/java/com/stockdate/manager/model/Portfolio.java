@@ -62,6 +62,24 @@ public class Portfolio {
     }
 
     /**
+     * Method removes {@link SharesPacket} with particular ticker from sharesPacketList.
+     *
+     * @param ticker ticker of shares packet
+     * @return true if shares packet was removed, false otherwise
+     */
+    public boolean deleteSharesPacket(String ticker) {
+        SharesPacket foundSharesPacket = sharesPacketList.stream().filter(sp -> sp.getTicker().equals(ticker))
+                .findFirst().orElseGet(SharesPacket::new);
+        int index = sharesPacketList.indexOf(foundSharesPacket);
+        if (index != -1) {
+            sharesPacketList.remove(index);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Method updates {@link SharesPacket} in the sharesPacketList.
      *
      * @param sharesPacket shares packet to update
