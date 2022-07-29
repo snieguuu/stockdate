@@ -1,12 +1,9 @@
 package com.stockdate.manager.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 /**
  * Class representing shares portfolio entity.
@@ -18,19 +15,32 @@ public class Portfolio {
     @GeneratedValue
     private Long id;
 
+    //todo: move to Capital
     @NotEmpty
     private String username;
 
-    @OneToOne(targetEntity = SharesPacket.class)
+    @OneToOne
+    private Capital capital;
+
+    @OneToMany(/*targetEntity = SharesPacket.class*/)
     private List<SharesPacket> sharesPacketList;
+
+    private Map<String, Double> sharesPacketInPortfolioPercentageMap;
+
+    private Map<String, Double> sharesPacketInCapitalPercentageMap;
+
+    private double totalPurchasesValue;
 
     private double totalPortfolioValue;
 
     private double totalPortfolioGainPercentage;
 
-    private double totalPortfolioGainCurrency;
+    private double totalPortfolioGainInCurrency;
 
     private double capitalInCurrency;
+
+    //Value of cash on all brokerage accounts - set manually
+    private double cashValue;
 
     public Long getId() {
         return id;
@@ -52,49 +62,20 @@ public class Portfolio {
         this.sharesPacketList = shares;
     }
 
-    /**
-     * Method adds {@link SharesPacket} to the sharesPacketList.
-     *
-     * @param sharesPacket shares packet to add
-     */
-    public void addSharesPacket(SharesPacket sharesPacket) {
-        sharesPacketList.add(sharesPacket);
+    public Capital getCapital() {
+        return capital;
     }
 
-    /**
-     * Method removes {@link SharesPacket} with particular ticker from sharesPacketList.
-     *
-     * @param ticker ticker of shares packet
-     * @return true if shares packet was removed, false otherwise
-     */
-    public boolean deleteSharesPacket(String ticker) {
-        SharesPacket foundSharesPacket = sharesPacketList.stream().filter(sp -> sp.getTicker().equals(ticker))
-                .findFirst().orElseGet(SharesPacket::new);
-        int index = sharesPacketList.indexOf(foundSharesPacket);
-        if (index != -1) {
-            sharesPacketList.remove(index);
-            return true;
-        } else {
-            return false;
-        }
+    public void setCapital(Capital capital) {
+        this.capital = capital;
     }
 
-    /**
-     * Method updates {@link SharesPacket} in the sharesPacketList.
-     *
-     * @param sharesPacket shares packet to update
-     * @return true if shares packet was updated, false otherwise
-     */
-    public boolean updateSharesPacket(SharesPacket sharesPacket) {
-        SharesPacket foundSharesPacket = sharesPacketList.stream().filter(sp -> sp.getId().equals(sharesPacket.getId()))
-                .findFirst().orElseGet(SharesPacket::new);
-        int index = sharesPacketList.indexOf(foundSharesPacket);
-        if (index != -1) {
-            sharesPacketList.set(index, sharesPacket);
-            return true;
-        } else {
-            return false;
-        }
+    public double getTotalPurchasesValue() {
+        return totalPurchasesValue;
+    }
+
+    public void setTotalPurchasesValue(double totalPurchasesValue) {
+        this.totalPurchasesValue = totalPurchasesValue;
     }
 
     public double getTotalPortfolioValue() {
@@ -113,12 +94,12 @@ public class Portfolio {
         this.totalPortfolioGainPercentage = totalPortfolioGainPercentage;
     }
 
-    public double getTotalPortfolioGainCurrency() {
-        return totalPortfolioGainCurrency;
+    public double getTotalPortfolioGainInCurrency() {
+        return totalPortfolioGainInCurrency;
     }
 
-    public void setTotalPortfolioGainCurrency(double totalPortfolioGainCurrency) {
-        this.totalPortfolioGainCurrency = totalPortfolioGainCurrency;
+    public void setTotalPortfolioGainInCurrency(double totalPortfolioGainInCurrency) {
+        this.totalPortfolioGainInCurrency = totalPortfolioGainInCurrency;
     }
 
     public double getCapitalInCurrency() {
@@ -129,21 +110,31 @@ public class Portfolio {
         this.capitalInCurrency = capitalInCurrency;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Portfolio portfolio = (Portfolio) o;
-        return Double.compare(portfolio.totalPortfolioValue, totalPortfolioValue) == 0 && Double
-                .compare(portfolio.totalPortfolioGainPercentage, totalPortfolioGainPercentage) == 0 &&
-                Double.compare(portfolio.totalPortfolioGainCurrency, totalPortfolioGainCurrency) == 0 &&
-                Double.compare(portfolio.capitalInCurrency, capitalInCurrency) == 0 &&
-                id.equals(portfolio.id) && sharesPacketList.equals(portfolio.sharesPacketList);
+    public Map<String, Double> getSharesPacketInPortfolioPercentageMap() {
+        return sharesPacketInPortfolioPercentageMap;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, sharesPacketList, totalPortfolioValue, totalPortfolioGainPercentage,
-                totalPortfolioGainCurrency, capitalInCurrency);
+    public void setSharesPacketInPortfolioPercentageMap(Map<String, Double> sharesPacketInPortfolioPercentageMap) {
+        this.sharesPacketInPortfolioPercentageMap = sharesPacketInPortfolioPercentageMap;
+    }
+
+    public void putPercentageToSharesPacketInPortfolioPercentageMap(String ticker, double percentage) {
+        this.sharesPacketInPortfolioPercentageMap.put(ticker, percentage);
+    }
+
+    public Map<String, Double> getSharesPacketInCapitalPercentageMap() {
+        return sharesPacketInCapitalPercentageMap;
+    }
+
+    public void setSharesPacketInCapitalPercentageMap(Map<String, Double> sharesPacketInCapitalPercentageMap) {
+        this.sharesPacketInCapitalPercentageMap = sharesPacketInCapitalPercentageMap;
+    }
+
+    public double getCashValue() {
+        return cashValue;
+    }
+
+    public void setCashValue(double cashValue) {
+        this.cashValue = cashValue;
     }
 }
