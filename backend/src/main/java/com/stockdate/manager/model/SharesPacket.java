@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
-import java.util.Objects;
+import java.util.List;
 
 /**
  * Class representing stock market shares packet.
@@ -17,8 +17,9 @@ public class SharesPacket {
     @GeneratedValue
     private Long id;
 
+    // Can be updated
     @NotEmpty
-    private Date purchaseDate;
+    private List<Date> purchaseDates;
 
     @NotEmpty
     private String name;
@@ -26,16 +27,21 @@ public class SharesPacket {
     @NotEmpty
     private String ticker;
 
+    // Can be updated and will be calculated after update
     @NotEmpty
     private int sharesAmount;
 
+    // Can be updated and will be calculated after update
     @NotEmpty
     private double purchasePrice;
 
-    private double purchaseValue;
-
+    // Can be updated
     @NotEmpty
     private double currentPrice;
+
+    // Values calculated:
+
+    private double purchaseValue;
 
     private double currentValue;
 
@@ -43,20 +49,20 @@ public class SharesPacket {
 
     private double gainInCurrency;
 
-    private double sharesPacketInPortfolioPercentage;
-
-    private double sharesPacketInCapitalPercentage;
-
     public Long getId() {
         return id;
     }
 
-    public Date getPurchaseDate() {
-        return purchaseDate;
+    public List<Date> getPurchaseDates() {
+        return purchaseDates;
     }
 
-    public void setPurchaseDate(Date purchaseDate) {
-        this.purchaseDate = purchaseDate;
+    public void setPurchaseDates(List<Date> purchaseDates) {
+        this.purchaseDates = purchaseDates;
+    }
+
+    public void addPurchaseDate(Date purchaseDate) {
+        purchaseDates.add(purchaseDate);
     }
 
     public String getName() {
@@ -129,43 +135,5 @@ public class SharesPacket {
 
     public void setGainInCurrency(double gainInCurrency) {
         this.gainInCurrency = gainInCurrency;
-    }
-
-    public double getSharesPacketInPortfolioPercentage() {
-        return sharesPacketInPortfolioPercentage;
-    }
-
-    public void setSharesPacketInPortfolioPercentage(double sharesPacketInPortfolioPercentage) {
-        this.sharesPacketInPortfolioPercentage = sharesPacketInPortfolioPercentage;
-    }
-
-    public double getSharesPacketInCapitalPercentage() {
-        return sharesPacketInCapitalPercentage;
-    }
-
-    public void setSharesPacketInCapitalPercentage(double sharesPacketInCapitalPercentage) {
-        this.sharesPacketInCapitalPercentage = sharesPacketInCapitalPercentage;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SharesPacket that = (SharesPacket) o;
-        return sharesAmount == that.sharesAmount && Double.compare(that.purchasePrice, purchasePrice) == 0 &&
-                Double.compare(that.purchaseValue, purchaseValue) == 0 &&
-                Double.compare(that.currentPrice, currentPrice) == 0 &&
-                Double.compare(that.currentValue, currentValue) == 0 &&
-                Double.compare(that.gainPercent, gainPercent) == 0 &&
-                Double.compare(that.gainInCurrency, gainInCurrency) == 0 &&
-                Double.compare(that.sharesPacketInPortfolioPercentage, sharesPacketInPortfolioPercentage) == 0 &&
-                Double.compare(that.sharesPacketInCapitalPercentage, sharesPacketInCapitalPercentage) == 0 && id.equals(that.id) &&
-                purchaseDate.equals(that.purchaseDate) && name.equals(that.name) && ticker.equals(that.ticker);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, purchaseDate, name, ticker, sharesAmount, purchasePrice, purchaseValue, currentPrice,
-                currentValue, gainPercent, gainInCurrency, sharesPacketInPortfolioPercentage, sharesPacketInCapitalPercentage);
     }
 }
