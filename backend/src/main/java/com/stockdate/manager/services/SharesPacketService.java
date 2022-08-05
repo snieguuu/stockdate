@@ -29,27 +29,27 @@ public class SharesPacketService {
     /**
      * Method calculating gain percentage for shares packet.
      *
-     * @param purchasePrice purchase share price
-     * @param currentPrice  current share price
+     * @param purchaseValue shares purchase value
+     * @param currentValue  shares current value
      * @return gain percentage for shares packet
      */
-    public double calculateGainPercentage(double purchasePrice, double currentPrice) {
-        return (currentPrice - purchasePrice) / purchasePrice * 100;
+    public double calculateGainPercentage(double purchaseValue, double currentValue) {
+        return (currentValue - purchaseValue) / purchaseValue * 100;
     }
 
     /**
      * Method calculating gain in currency for share packet.
      *
-     * @param purchasePrice purchase share price
-     * @param currentPrice  current share price
+     * @param purchaseValue shares purchase value
+     * @param currentValue  shares current value
      * @return gain in currency for share packet
      */
-    public double calculateGainInCurrency(double purchasePrice, double currentPrice) {
-        return currentPrice - purchasePrice;
+    public double calculateGainInCurrency(double purchaseValue, double currentValue) {
+        return currentValue - purchaseValue;
     }
 
     /**
-     * Method recalculating fields below fields:
+     * Method recalculating below fields:
      * purchase value, current value, gain percentage, gain in currency
      * in {@link SharesPacket} after changing below fields:
      * shares amount, purchase price or current price.
@@ -63,8 +63,8 @@ public class SharesPacketService {
 
         double newPurchaseValue = calculateSharesValue(sharesAmount, purchasePrice);
         double newCurrentValue = calculateSharesValue(sharesAmount, currentPrice);
-        double newGainPercent = calculateGainPercentage(purchasePrice, currentPrice);
-        double newGainInCurrency = calculateGainInCurrency(purchasePrice, currentPrice);
+        double newGainPercent = calculateGainPercentage(newPurchaseValue, newCurrentValue);
+        double newGainInCurrency = calculateGainInCurrency(newPurchaseValue, newCurrentValue);
 
         sharesPacket.setPurchaseValue(newPurchaseValue);
         sharesPacket.setCurrentValue(newCurrentValue);
